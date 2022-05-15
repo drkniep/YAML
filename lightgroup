@@ -1,0 +1,8 @@
+# Denne code laver flere lys entitys om tl én lysgruppe. #
+  - platform: group
+    name: Køkkenbord lysgruppe
+    entities:
+      - light.kokken_lys_1
+      - light.kokken_lys_2
+      - light.kokken_lys_3
+      - light.kokken_lys_4

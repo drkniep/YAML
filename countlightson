@@ -1,0 +1,7 @@
+# Denne kode laver en entity der tæller hvor mange lys du har tændt #
+  - platform: template
+    sensors:
+      count_lights_on:
+        friendly_name: "Lys tændt"
+        unit_of_measurement: ''
+        value_template: "{{ states.light | selectattr('state', 'eq', 'on') | list | count }}"

@@ -1,0 +1,5 @@
+  - platform: template
+    sensors:
+      sensor_pir_sovevarelse:
+        friendly_name: "Pir sovesærelse"
+        value_template: '{% if is_state("binary_sensor.pir_sovevarelse", "off") %}  {% else %}Bevægelse lige nu{% endif %}'

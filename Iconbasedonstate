@@ -1,0 +1,5 @@
+{% if is_state('binary_sensor.dorkontakt_hoveddor_ias_zone', 'on') %}
+  mdi:lock
+{% else %}
+  mdi:lock-alert-outline
+{% endif %}

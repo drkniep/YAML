@@ -1,0 +1,17 @@
+{{ states('input_text.test_tekst') }}
+{{ states('input_text.test_tekst') | int }}
+{{ states('input_text.test_tekst') | float }}
+{{ states('input_text.test_tekst') *3 }}
+
+{{ states('input_text.test_tekst') |round }}
+{{ states('input_text.test_tekst') |round (2)}}
+
+{{ states('input_text.test_tekst') | int*10  }}
+{{ states('input_text.test_tekst') | float*10  }}
+{{ (states('input_text.test_tekst') | float*10) | round(2) }}
+{{ (states('input_text.test_tekst') | float*10 )| int}}
+{{ (states('input_text.test_tekst') | float) + (states('input_text.test_tekst') | float)}}
+
+{{ states('input_text.test_tekst') |round(0, 'ceil')}}
+{{ states('input_text.test_tekst') |round(0, 'floor')}}
+{{ states('input_text.test_tekst') |round }}

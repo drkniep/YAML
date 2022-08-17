@@ -1,0 +1,5 @@
+Ugangspunkt {{states('input_text.test_tekst')}}
+
+Gennemsnit {{(states('input_text.test_tekst') | float +
+states('input_text.test_tekst') | float  +
+states('input_text.test_tekst') | float )/3}}

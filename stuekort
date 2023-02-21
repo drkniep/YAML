@@ -1,0 +1,491 @@
+type: custom:stack-in-card
+mode: vertical
+cards:
+  - type: custom:mushroom-template-card
+    primary: Køkken
+    secondary: >-
+      {{(states('sensor.xaiomi_kokken_temperature')) }} °C | {{
+      (states('sensor.xaiomi_kokken_humidity')) }} %
+    icon: mdi:food-fork-drink
+    picture: local/test_sovevarelse.png
+    layout: horizontal
+    multiline_secondary: false
+    tap_action:
+      action: fire-dom-event
+      browser_mod:
+        service: browser_mod.popup
+        data:
+          content:
+            type: custom:apexcharts-card
+            header:
+              show: true
+              title: Temperatur og luftfugtighed i køkkenet
+              show_states: true
+              colorize_states: true
+            graph_span: 12h
+            series:
+              - entity: sensor.xaiomi_kokken_humidity
+                name: Luftfugtighed
+              - entity: sensor.xaiomi_kokken_temperature
+                name: Temperatur
+                color: green
+    icon_color: blue
+    hold_action:
+      action: none
+    double_tap_action:
+      action: none
+    style: |
+      :host([dark-mode]) {
+        background: rgba(var(--rgb-primary-background-color), 0.2);
+      } 
+      :host {
+        background: rgba(var(--rgb-primary-text-color), 0.025);
+      } 
+  - type: custom:mushroom-chips-card
+    style: |
+      ha-card {
+        --chip-box-shadow: none;
+        --chip-background: none;
+        --chip-spacing: 0;
+      }
+    alignment: center
+    chips:
+      - type: template
+        entity: binary_sensor.mmwave_kokken
+        icon: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          mdi:motion-sensor
+          {% elif state=='off' %}
+          mdi:motion-sensor-off
+          {% else %}
+          mdi:motion-sensor-off
+          {% endif %}
+        tap_action:
+          action: fire-dom-event
+          browser_mod:
+            service: browser_mod.popup
+            data:
+              content:
+                type: entities
+                entities:
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.hoveddor_iaszone
+                    name: Hoveddør
+                    icon: mdi:door-closed
+                    icon_color: blue
+                    secondary_info: last-changed
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.bagdor_iaszone
+                    name: Bagdør
+                    icon: mdi:door
+                    icon_color: blue
+                    secondary_info: last-changed
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.pir_entre_occupancy
+                    name: Entre
+                    icon: mdi:motion-sensor
+                    icon_color: blue
+                    secondary_info: last-changed
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.bevaegelse_stue
+                    name: Stue
+                    icon: mdi:motion-sensor
+                    icon_color: blue
+                    secondary_info: last-changed
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.pir_bad_occupancy
+                    name: Badeværelset
+                    icon: mdi:motion-sensor
+                    icon_color: blue
+                    secondary_info: last-changed
+                  - type: custom:mushroom-entity-card
+                    entity: binary_sensor.mmwave_kokken
+                    name: Køkken
+                    icon: mdi:motion-sensor
+                    icon_color: blue
+                    secondary_info: last-changed
+        icon_color: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          green
+          {% elif state=='off' %}
+          white
+          {% else %}
+          white
+          {% endif %}
+        style: |
+          ha-card {
+            {% if states('binary_sensor.x') == 'on' %}
+            animation: blink 0.9s linear infinite;
+            }
+            @keyframes blink {
+              50% {opacity: 0;}
+              }
+            {%- else -%}
+            box-shadow: 0px 0px;
+            {%- endif %}
+          ha-card {
+            box-shadow: 0px 0px;
+      - type: template
+        entity: light.samlet_kokken
+        icon: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          mdi:lightbulb-on-outline
+          {% elif state=='off' %}
+          mdi:lightbulb-off-outline
+          {% else %}
+          mdi-lightbulb-outline
+          {% endif %}
+        tap_action:
+          action: call-service
+          service: light.turn_off
+          data: {}
+          target:
+            entity_id: light.samlet_kokken
+        hold_action:
+          action: more-info
+        icon_color: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          yellow
+          {% elif state=='off' %}
+          white
+          {% else %}
+          gray
+          {% endif %}
+        style: |
+          ha-card {
+            {% if states('light.x') == 'on' %}
+            animation: blink 0.9s linear infinite;
+            }
+            @keyframes blink {
+              50% {opacity: 0;}
+              }
+            {%- else -%}
+            box-shadow: 0px 0px;
+            {%- endif %}
+          ha-card {
+            box-shadow: 0px 0px;
+      - type: template
+        entity: light.samlet_kokken
+        icon: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          mdi:lamp
+          {% elif state=='off' %}
+          mdi:lamp
+          {% else %}
+          mdi:lamp
+          {% endif %}
+        tap_action:
+          action: fire-dom-event
+          browser_mod:
+            service: browser_mod.popup
+            data:
+              content:
+                square: false
+                columns: 1
+                type: grid
+                cards:
+                  - type: vertical-stack
+                    cards:
+                      - type: vertical-stack
+                        cards:
+                          - type: markdown
+                            content: |
+                              # Lys køkken
+                            style:
+                              ha-markdown:
+                                $: |
+                                  h1 {
+                                    font-size: 30px;
+                                    font-weight: bold;
+                                    font-family: Helvetica;
+                                    letter-spacing: '-0.01em';
+                                    text-align: center;
+                                  }
+                          - type: custom:mushroom-light-card
+                            entity: light.kokken_lys
+                            use_light_color: true
+                            show_brightness_control: true
+                            show_color_temp_control: true
+                          - type: custom:mushroom-light-card
+                            entity: light.stander_kokken
+                            name: Hængelamape
+                            use_light_color: true
+                            show_brightness_control: true
+                            show_color_temp_control: true
+                          - type: custom:mushroom-light-card
+                            entity: light.tra_lampe_kokken_light
+                            use_light_color: true
+                            show_brightness_control: true
+                          - type: custom:mushroom-light-card
+                            entity: light.ledband_kokken
+                            use_light_color: true
+                            show_brightness_control: true
+                            show_color_control: true
+                            tap_action:
+                              action: more-info
+                            double_tap_action:
+                              action: call-service
+                              service: light.turn_on
+                              data:
+                                effect: solid
+                              target:
+                                entity_id: light.ledband_kokken
+                          - square: false
+                            columns: 3
+                            type: grid
+                            cards:
+                              - type: custom:mushroom-light-card
+                                entity: light.overskab
+                              - type: custom:mushroom-light-card
+                                entity: light.kokken_loft_light
+                              - type: custom:mushroom-light-card
+                                entity: light.gardbelysning
+                          - square: true
+                            columns: 6
+                            type: grid
+                            cards:
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: mdi:chef-hat
+                                tap_action:
+                                  action: call-service
+                                  service: scene.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: scene.madlaving
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: hue:scene-dimmed
+                                tap_action:
+                                  action: call-service
+                                  service: scene.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: scene.kokken_aften
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: hue:lightstrip
+                                tap_action:
+                                  action: call-service
+                                  service: scene.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: scene.ledband_kokken
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: mdi:file-question
+                                tap_action:
+                                  action: call-service
+                                  service: scene.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: scene.aften_hygge
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: mdi:file-question
+                                tap_action:
+                                  action: call-service
+                                  service: scene.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: scene.aften_hygge
+                              - type: custom:mushroom-template-card
+                                primary: ''
+                                secondary: ''
+                                icon: mdi:lightbulb-group-off
+                                tap_action:
+                                  action: call-service
+                                  service: automation.turn_on
+                                  data: {}
+                                  target:
+                                    entity_id: automation.sluk_alt_lys
+        hold_action:
+          action: more-info
+        icon_color: |-
+          {% set state=states(entity) %}
+          {% if state=='on' %}
+          pink
+          {% elif state=='off' %}
+          white
+          {% else %}
+          gray
+          {% endif %}
+        style: |
+          ha-card {
+            {% if states('light.x') == 'on' %}
+            animation: blink 0.9s linear infinite;
+            }
+            @keyframes blink {
+              50% {opacity: 0;}
+              }
+            {%- else -%}
+            box-shadow: 0px 0px;
+            {%- endif %}
+          ha-card {
+            box-shadow: 0px 0px;
+      - type: template
+        entity: media_player.kokken
+        icon: |-
+          {% set state=states(entity) %}
+          {% if state=='playing' %}
+          mdi:google-home
+          {% elif state=='off' %}
+          mdi:google-home
+          {% else %}
+          mdi:google-home
+          {% endif %}
+        tap_action:
+          action: fire-dom-event
+          browser_mod:
+            service: browser_mod.popup
+            data:
+              content:
+                square: false
+                columns: 1
+                type: grid
+                cards:
+                  - type: vertical-stack
+                    cards:
+                      - type: vertical-stack
+                        cards:
+                          - type: markdown
+                            content: |
+                              # Køkken
+                            style:
+                              ha-markdown:
+                                $: |
+                                  h1 {
+                                    font-size: 30px;
+                                    font-weight: bold;
+                                    font-family: Helvetica;
+                                    letter-spacing: '-0.01em';
+                                    text-align: center;
+                                  }
+                          - square: true
+                            columns: 6
+                            type: grid
+                            cards:
+                              - type: picture
+                                image: >-
+                                  https://upload.wikimedia.org/wikipedia/commons/6/6e/DR_P3_2017_logo.png
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: DR P3
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                              - type: picture
+                                image: >-
+                                  https://upload.wikimedia.org/wikipedia/en/thumb/d/da/DR_P4_logo_2020.svg/1200px-DR_P4_logo_2020.svg.png
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: DR P4 Fyn
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                              - type: picture
+                                image: >-
+                                  https://cdn-profiles.tunein.com/s8928/images/logod.png?t=151611
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: Classic.fm Als
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                              - type: picture
+                                image: >-
+                                  https://www.radio.dk/images/broadcasts/35/d5/10991/2/c175.png
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: Radio Horsens
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                              - type: picture
+                                image: >-
+                                  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAABIFBMVEX///9gu7xVuLnL5udNmpHp9PVStbZLl44/kYe709BHmI9EjoEWY0uSvrkOVjhGkIMAORANVDUASihSoptBiXsbZ09Vp6IAPRUPWT0TYUgibVcAQx4APhhZrqs8hHQpcl05f20AMAAxeGMARyQANQAAIgCc0tP19/bo7uxbaVtYblqY0NFJqqgAOAAAHQDk5eSNjo3I0czW4d0AJwAALAAAQBKNubQmf2+ouK/a5uMAAACcq6FognEuW0AZVTdPdGCBmoy1w7uDpptbjX6hvbVplYe+2Naqzss/X0dmqqMqZEtKgG6UtKp3p569xL5oemkAEwBtoZaLnJBmjX4tTTFzdXOmqqZ+iX4uNS4gQSGNppvW19aan5o7QTtPWk8hNiHEdemFAAAIH0lEQVR4nO2b/UPaSBrHc1t8ASkShOMlCA3BTdqVVUIxsKgVBOuqxaqtdrV79///F5d5ZoAACYRihbv7fn5Qg5MhHybzkmceJAkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOD/hXLj8ChZLJaqxx9Omsb08mazdVrIJBKZ/JvTVrus//wrnAvzUFVLSUXTYgxNqV7UJpYPdsKJTCafL/TJn7Z9fCySXj/7+FrwWx/+8byiv38d47eV+f3OK0XFRgjGZBtNaXgVN1q2Xp7B5d4ICjfm5PdZ+fhnKLRF/LPHts0uN/x1d9XBL31WX80rePh7NJsdNZTl2IVro+ittPAbMczlctbpBMe6u57DcHt1e/Uf4/wyp6GRVZNJF8NIRNbK48Xbtl/Gy9B2/OTVIQ/WA1tbizDcqxSTwrBaKrKRJqnFuGEkoowq6pfpTKZnaP9OcN1C39B2dG3GeijUF3xZQ/29GiXDqKqdNE1DN8zmiaJww1REGS5tUgOSVCaRb7Hyun1G8OrUluSC8bjVHn8bcz0QGBhueRlurz6/4bkaZYbJygfnR9881pihnBruicFIQhgmEq368CfVjBeEYdz6NPoudSbIDUOsM3oYrv6ENqz9HmWGUXX0dnysyhH5YrhPNW1BMkykr1zqOotb3DCeG1VcW+OGgdDrV7NMnCurcxsWVWYYVcdHzbKiXY68Iie4YbrjcZVtixuOKh5QEwYCoYMZ1wXzG3ZZE0ajO08u/zPvho+NSJgbppqe9Rlxbhi3Pjqvc52aMLB+Nuv1zW94/Z4JFg/9lM2QYCKRnjitd7jihuXopq+5YWhmwWcwrLCbNFqZshQhWikhWJ9c7oYUNzY2By+tUTcMjY0/05nbUP9MN6nqo2hd5k2YmvppbHLDeH/O0NfJcN3PsnWEuQ1N6obFcx9FL9NkmHKZ60bQLTLcsHqjiskNt37gAuc2fOKG76aXNOUwMwyf+qg1aJFh/EAcn5Fh6GDiSe48l6GPNrSbkBmmfI32N2TYb8QgN3z9Axf4TIbR4tSCht2EtqHrRO9S2iLDDXFHL9LQ4CPNztTR4zHFDMMpn/V+4oZiOF2kofRZ9TcfptPMMP3os9q6RYJxPrEs1PCdyhvR5TnQSV0mw4jv8X6NNeKmuE0XaljbidLKuzJZsZZihuGC73o/kuFmgA4WaigJw+TO7aRSd2Toc5xhGBYZWnSwWMPGDjfMFpMTgmtp6oepKfeyE96GvCMu1lD6wp+As9lssXTrteSMkWFkhkcfNppubm4E2d8LNtQrxWg/TqMeNfZcytgDDfXDGaptc0MaahZsKBlqPxKlaEqyeNwYGzFNMkxfup3uQZAb0kqNG9qOoVBgJNy2u7u7vb3rXc2zGEr6eWUomqiULmrD92M5QoZ3HhW4cZYjQ3pg6hmO6vXiND/d0J4M3qvJoXipUrpzdskmN+zMUKXpZugRTXwBQ3tILarJoYhwrHo3aEdheDJDhUtnaFucV0pZZ8w7pvTDMf8LbcjQa+dqVXPsWygn4j8/0A9dRppQH+G528O7muc1tDEaR8XsYN8iJpzEWOp/0caXbbYhzRBitjjQVzzwrubZDSUmeVzShGFE4+scg8+H6RmqOeCGFFNc9Hw4jnlYiol9C4XPjWJNM0Mo6YYM4xQ/XD5Du9E+KNxQ5rN8fuZ1aY6vS+kzWUZDvm1hG6Y0usYT/mzR8n16XRjSwXIaSo8aGcq01W1PF+GZOmKbPwHzGPCSGkoXMjOM0G1q8Gd8/7cpxWnEQLO0hk2NGaZkOijwOI3fGZGtSlmchg9Ny2qoK2QYo8VbjWJtvgM1azzWdsOPltVQinFDktJFvNTfws3k8dJ4kB8urWFEHhhKJyLm7WeXStrgMe8Ncbi0hrI8uEsp6E37oz5OvMrxfYveJunSGop+KI5aKTL0cZ+aYu+p14RLa1jmY2lvDtS54fStC8Pi+4dWf8d3WQ0P+XzYnyAoEWP6DqIhdrnjN/2XltSwXCXD2CAroZMmw8zEVqxbPcNBiGA5DfUYX5fGHK/l0zwXI+29Tdq0erkYjjjPUhoa4ulJdu426bTRTQlRQfezOr18GstZYBkNa1WRuScPvWwwRUr6Sl+OL1GNliWyvoYFX8yw+/Ur5QXp9+zn/fX1AwtvN1h3aVzfOgKkeu1YEc/4o6mJeiYs8toy4ULbGXDUg538m35e23ATv5ThfnfvG3O6/4MdvX0ynv6yjd/Zal9qRjnJCxmNk6Oi0ovTaOM7oqciOZHlXiYSnat2MxhsX7XesPxLkZuYy41sf7yY4ZN037V/f/vOfr61zYx3ZFh+sI+bPCJTfq9o47E2J+1UIjPIoM3z7NLCIIM2Z92MbuC8mOGe9Lfdhk8P0r+YIVtu/kWGDWa8xze6y6VBNLHqvt1mUA6tV46wlRsfhF7K8PvnP5jK1/3uZ10YfnEYPgwbxpIXbrtQvFAh3VMcMbTckmdfsA3v9+0R4Vv3/uGe36XmNb9L2fZvreY01KoX3vmHNmZHJLM7DQv5uPsk8oL98O8n6TsbSf/NRhq9zJJKaaTp6l2R7VxWk8lq6ehx6kOS3uzQ3Cgs7V/eX7cIrq+vhUJzGPr8NkJ3T9L3pX02DHzX7dni7QO7Ipotbq97u/jm4W3N97dfjLI9inY6ndZVOzgpYdE8INwbeDIr/AsnU9IhAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/nv4DzTmUUGcOVbYAAAAAElFTkSuQmCC
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: Radio Soft
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                              - type: picture
+                                tap_action:
+                                  action: call-service
+                                  service: media_player.select_source
+                                  data:
+                                    source: Pop FM
+                                  target:
+                                    entity_id: media_player.kokken
+                                hold_action:
+                                  action: none
+                                image: local/popfm.png
+                          - type: custom:mushroom-template-card
+                            primary: '{{states (''sensor.hojtaler_kokken_afspiller'')}} '
+                            secondary: ''
+                            icon: mdi:home
+                            picture: >-
+                              {{state_attr ('sensor.hojtaler_kokken_afspiller',
+                              'entity_picture')}}
+                          - type: custom:mushroom-media-player-card
+                            entity: media_player.kokken
+                            media_controls:
+                              - on_off
+                              - shuffle
+                              - previous
+                              - play_pause_stop
+                              - next
+                              - repeat
+                          - type: custom:mushroom-media-player-card
+                            entity: media_player.kokken
+                            use_media_info: true
+                            show_volume_level: true
+                            volume_controls:
+                              - volume_mute
+                              - volume_set
+                              - volume_buttons
+        icon_color: |-
+          {% set state=states(entity) %}
+          {% if state=='playing' %}
+          purple
+          {% elif state=='off' %}
+          white
+          {% else %}
+          white
+          {% endif %}
+style: |
+  ha-card {
+    height: 102px;
+    {% if is_state('light.x', 'on') %}
+       background: rgba(255, 152, 0, 0.1);
+    {% endif %}
+    {% if is_state('light.x', 'on') %}
+       background: rgba(255, 152, 0, 0.1);
+    {% endif %}
+  }
